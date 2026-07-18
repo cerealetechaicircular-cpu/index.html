@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CerealeTech — L'IA au service des greniers du Sahel</title>
+<meta name="description" content="Plateforme de crédit intelligent, marketplace et économie circulaire pour les agriculteurs du Sahel." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#eef6ec;
+    --husk:#d7ecd7;
+    --ink:#0f3b0f;
+    --soil:#1a5e1a;
+    --sorgho:#1a5e1a;
+    --gold:#2d7a2d;
+    --gold-light:#a8e6a8;
+    --indigo:#2d7a2d;
+    --indigo-light:#4caf50;
+    --line:rgba(15,59,15,0.14);
+    --radius:2px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+  body{
+    font-family:'Manrope',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4{font-family:'Fraunces',serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--indigo); outline-offset:3px;}
+
+  /* ===== grain glyph (signature element, reused site-wide) ===== */
+  .grain{
+    display:inline-block;
+    width:1em; height:1em;
+    vertical-align:middle;
+  }
+
+  /* ===== HEADER ===== */
+  .header{
+    background:var(--cream);
+    border-bottom:1px solid var(--line);
+    padding:18px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    position:sticky;
+    top:0;
+    z-index:1000;
+  }
+  .logo{display:flex; align-items:center; gap:10px;}
+  .logo svg{width:34px; height:34px; flex-shrink:0;}
+  .logo-text{display:flex; flex-direction:column; line-height:1.1;}
+  .logo-text .name{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:20px;
+    letter-spacing:-0.3px;
+    color:var(--ink);
+  }
+  .logo-text .name em{
+    font-style:normal;
+    color:var(--gold);
+  }
+  .logo-text small{
+    font-family:'JetBrains Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--soil);
+    opacity:0.65;
+  }
+  .nav{display:flex; gap:28px; align-items:center; flex-wrap:wrap;}
+  .nav a{
+    text-decoration:none;
+    font-size:14px;
+    font-weight:600;
+    color:var(--soil);
+    position:relative;
+    padding:6px 0;
+  }
+  .nav a:not(.btn-demo)::after{
+    content:'';
+    position:absolute;
+    left:0; bottom:0;
+    width:0; height:2px;
+    background:var(--gold);
+    transition:width 0.25s ease;
+  }
+  .nav a:not(.btn-demo):hover::after{width:100%;}
+  .btn-demo{
+    background:var(--ink);
+    color:var(--cream) !important;
+    padding:11px 22px;
+    border-radius:var(--radius);
+    font-weight:700;
+    font-size:13.5px;
+    letter-spacing:0.3px;
+    transition:0.25s;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-demo:hover{background:var(--indigo);}
+
+  /* ===== HERO — grain field ===== */
+  .hero{
+    position:relative;
+    padding:90px 40px 70px;
+    background:var(--ink);
+    color:var(--cream);
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+  }
+  .grain-field{
+    position:absolute;
+    inset:0;
+    display:grid;
+    grid-template-columns:repeat(auto-fill, 46px);
+    grid-auto-rows:56px;
+    justify-content:center;
+    opacity:0.16;
+    pointer-events:none;
+  }
+  .grain-field svg{
+    width:22px; height:34px;
+    stroke:var(--gold-light);
+  }
+  .hero-inner{
+    position:relative;
+    z-index:2;
+    max-width:780px;
+    margin:0 auto;
+    text-align:center;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--gold-light);
+    margin-bottom:22px;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+  }
+  .hero-eyebrow::before{
+    content:'';
+    width:26px; height:1px;
+    background:var(--gold-light);
+    opacity:0.6;
+  }
+  .hero h1{
+    font-size:clamp(34px,5.2vw,58px);
+    font-weight:600;
+    line-height:1.08;
+    letter-spacing:-0.5px;
+    margin-bottom:24px;
+  }
+  .hero h1 em{
+    font-style:normal;
+    font-weight:700;
+    background:linear-gradient(100deg, var(--gold-light), var(--gold) 60%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .hero p{
+    font-size:17.5px;
+    color:rgba(246,241,228,0.72);
+    max-width:600px;
+    margin:0 auto 34px;
+  }
+  .hero-badges{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .hero-badges .badge{
+    background:rgba(246,241,228,0.06);
+    border:1px solid rgba(246,241,228,0.18);
+    padding:9px 18px;
+    border-radius:30px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--cream);
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .hero-badges .badge .dot{
+    width:6px; height:6px;
+    border-radius:50%;
+    background:var(--gold-light);
+    flex-shrink:0;
+  }
+
+  /* ===== MOCKUP ===== */
+  .mockup-section{
+    padding:80px 40px 90px;
+    background:var(--cream);
+    text-align:center;
+  }
+  .section-head{max-width:600px; margin:0 auto 56px;}
+  .section-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:14px;
+  }
+  .mockup-section h2, .features h2, .stats-wrap h2{
+    font-size:clamp(26px,3.4vw,36px);
+    font-weight:600;
+    color:var(--ink);
+    margin-bottom:12px;
+    letter-spacing:-0.3px;
+  }
+  .section-head p{color:var(--soil); opacity:0.75; font-size:16px;}
+
+  .phones-container{
+    display:flex;
+    justify-content:center;
+    gap:26px;
+    flex-wrap:wrap;
+    align-items:flex-start;
+  }
+  .phone-card{
+    background:var(--ink);
+    border-radius:22px;
+    padding:6px;
+    width:272px;
+    box-shadow:0 24px 50px -20px rgba(28,23,6,0.35);
+    transition:transform 0.3s ease, box-shadow 0.3s ease;
+    text-align:left;
+  }
+  .phone-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 32px 60px -18px rgba(28,23,6,0.4);
+  }
+  .phone-card .screen{
+    background:var(--husk);
+    border-radius:18px;
+    padding:18px 16px 22px;
+    min-height:480px;
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+  }
+  .screen .status-bar{
+    display:flex;
+    justify-content:space-between;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    opacity:0.5;
+    padding-bottom:12px;
+    border-bottom:1px solid var(--line);
+  }
+  .screen .app-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:14px 0 4px;
+  }
+  .screen .app-row svg{width:18px; height:18px;}
+  .screen .app-row span{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:14px;
+  }
+  .screen .persona-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--soil);
+    opacity:0.6;
+    margin-bottom:14px;
+  }
+  .credit-score{
+    background:var(--ink);
+    color:var(--cream);
+    border-radius:12px;
+    padding:16px;
+    margin-bottom:12px;
+  }
+  .credit-score .label{font-size:11px; opacity:0.6; font-family:'JetBrains Mono',monospace;}
+  .credit-score .big{
+    font-family:'Fraunces',serif;
+    font-size:32px;
+    font-weight:700;
+    color:var(--gold-light);
+    margin:4px 0;
+  }
+  .credit-score .status{font-size:12px; color:var(--cream); opacity:0.85;}
+  .feature-list{list-style:none;}
+  .feature-list li{
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:12.8px;
+  }
+  .feature-list li .ico{
+    width:16px; height:16px;
+    flex-shrink:0;
+    color:var(--indigo);
+  }
+  .data-row{
+    background:rgba(28,23,6,0.05);
+    border-radius:10px;
+    padding:11px 13px;
+    margin:8px 0;
+    font-size:12.5px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .data-row .v{font-family:'JetBrains Mono',monospace; font-weight:600; color:var(--indigo);}
+  .btn-screen{
+    background:var(--indigo);
+    color:var(--cream);
+    border:none;
+    padding:12px;
+    border-radius:8px;
+    font-weight:700;
+    font-size:12.5px;
+    margin-top:auto;
+    cursor:default;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  .phone-label{
+    text-align:center;
+    margin-top:16px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.5px;
+    color:var(--soil);
+    font-weight:600;
+  }
+
+  /* ===== FEATURES ===== */
+  .features{padding:90px 40px; background:var(--husk); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .features .section-head{text-align:center;}
+  .features-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(230px,1fr));
+    gap:1px;
+    max-width:1120px;
+    margin:0 auto;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  .feature-item{
+    background:var(--cream);
+    padding:34px 26px;
+    transition:background 0.25s ease;
+  }
+  .feature-item:hover{background:#fff;}
+  .feature-item .idx{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--gold);
+    margin-bottom:16px;
+    display:block;
+  }
+  .feature-item svg{width:26px; height:26px; color:var(--indigo); margin-bottom:14px;}
+  .feature-item h3{font-size:17px; font-weight:600; color:var(--ink); margin-bottom:8px;}
+  .feature-item p{font-size:13.8px; color:var(--soil); opacity:0.8;}
+
+  /* ===== STATS — "grenier" ===== */
+  .stats-wrap{padding:90px 40px; background:var(--ink); color:var(--cream); text-align:center;}
+  .stats-wrap .section-head p{color:rgba(246,241,228,0.6);}
+  .stats-wrap .section-eyebrow{color:var(--gold-light);}
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(160px,1fr));
+    max-width:1100px;
+    margin:0 auto;
+    border-top:1px solid rgba(246,241,228,0.15);
+    border-left:1px solid rgba(246,241,228,0.15);
+  }
+  .stat{
+    padding:32px 20px;
+    border-right:1px solid rgba(246,241,228,0.15);
+    border-bottom:1px solid rgba(246,241,228,0.15);
+  }
+  .stat h4{
+    font-family:'JetBrains Mono',monospace;
+    font-size:34px;
+    font-weight:600;
+    color:var(--gold-light);
+    margin-bottom:8px;
+  }
+  .stat p{font-size:13px; color:rgba(246,241,228,0.65);}
+
+  /* ===== FOOTER ===== */
+  .footer{
+    background:var(--cream);
+    color:var(--soil);
+    padding:50px 40px 26px;
+    text-align:center;
+  }
+  .footer .logo{justify-content:center; margin-bottom:22px;}
+  .footer .social{display:flex; justify-content:center; gap:22px; margin-bottom:22px;}
+  .footer .social a{
+    width:38px; height:38px;
+    border:1px solid var(--line);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:0.25s;
+  }
+  .footer .social a:hover{background:var(--ink); color:var(--cream); border-color:var(--ink);}
+  .footer .social svg{width:16px; height:16px;}
+  .footer small{opacity:0.55; font-size:12.5px; font-family:'JetBrains Mono',monospace;}
+
+  @media (max-width:768px){
+    .header{padding:14px 20px;}
+    .nav{gap:16px; width:100%; justify-content:space-between;}
+    .hero{padding:60px 20px 50px;}
+    .mockup-section, .features, .stats-wrap{padding:56px 20px;}
+    .phone-card{width:100%; max-width:300px;}
+    .stats{grid-template-columns:1fr 1fr;}
+  }
+
+  /* ===== CTA buttons on phone cards (now real triggers) ===== */
+  .btn-screen{cursor:pointer; border:none; width:100%;}
+  .btn-screen:hover{background:var(--indigo-light);}
+
+  /* ===== CTA band (bottom of features, real actions) ===== */
+  .cta-band{
+    padding:70px 40px;
+    background:var(--cream);
+    text-align:center;
+    border-bottom:1px solid var(--line);
+  }
+  .cta-band h2{font-size:clamp(24px,3vw,32px); margin-bottom:14px; color:var(--ink);}
+  .cta-band p{color:var(--soil); opacity:0.8; margin-bottom:30px; max-width:520px; margin-left:auto; margin-right:auto;}
+  .cta-buttons{display:flex; justify-content:center; gap:14px; flex-wrap:wrap;}
+  .btn-primary, .btn-secondary{
+    font-family:'Manrope',sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    padding:14px 28px;
+    border-radius:var(--radius);
+    border:none;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    transition:0.25s;
+  }
+  .btn-primary{background:var(--indigo); color:var(--cream);}
+  .btn-primary:hover{background:#5b4a80;}
+  .btn-secondary{background:transparent; color:var(--ink); border:1px solid var(--line);}
+  .btn-secondary:hover{border-color:var(--ink);}
+
+  /* ===== MODAL / FORMS ===== */
+  .modal-overlay{
+    position:fixed; inset:0;
+    background:rgba(28,23,6,0.55);
+    backdrop-filter:blur(2px);
+    display:none;
+    align-items:flex-start;
+    justify-content:center;
+    padding:40px 20px;
+    overflow-y:auto;
+    z-index:2000;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:var(--cream);
+    border-radius:14px;
+    width:100%;
+    max-width:460px;
+    padding:32px 30px 30px;
+    position:relative;
+    box-shadow:0 40px 80px -20px rgba(0,0,0,0.4);
+    margin:auto;
+  }
+  .modal-close{
+    position:absolute; top:18px; right:18px;
+    width:32px; height:32px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:transparent;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink);
+  }
+  .modal-close:hover{background:var(--husk);}
+  .modal-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--gold); margin-bottom:10px;
+  }
+  .modal h3{font-size:22px; margin-bottom:8px; color:var(--ink);}
+  .modal .modal-sub{font-size:13.5px; color:var(--soil); opacity:0.75; margin-bottom:24px;}
+  .form-field{margin-bottom:16px;}
+  .form-field label{
+    display:block; font-size:12.5px; font-weight:700;
+    margin-bottom:6px; color:var(--soil);
+  }
+  .form-field input, .form-field select, .form-field textarea{
+    width:100%;
+    font-family:'Manrope',sans-serif;
+    font-size:14.5px;
+    padding:11px 13px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#fff;
+    color:var(--ink);
+  }
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus{
+    outline:none; border-color:var(--indigo);
+  }
+  .form-field textarea{resize:vertical; min-height:80px;}
+  .form-submit{
+    width:100%;
+    background:var(--indigo);
+    color:var(--cream);
+    font-weight:700;
+    font-size:14.5px;
+    padding:13px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:6px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:0.2s;
+  }
+  .form-submit:hover{background:#5b4a80;}
+  .form-submit:disabled{opacity:0.6; cursor:wait;}
+  .form-note{font-size:11.5px; color:var(--soil); opacity:0.55; margin-top:12px; text-align:center;}
+  .form-status{
+    display:none;
+    padding:12px 14px; border-radius:8px; font-size:13.5px;
+    margin-bottom:16px;
+  }
+  .form-status.show{display:block;}
+  .form-status.success{background:#e3f0e3; color:#1e4620;}
+  .form-status.error{background:#f5e0e0; color:#5c1a1a;}
+
+  /* ===== WhatsApp floating button ===== */
+  .whatsapp-float{
+    position:fixed;
+    bottom:24px;
+    right:24px;
+    width:58px; height:58px;
+    background:#25D366;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 8px 24px rgba(0,0,0,0.25);
+    z-index:1500;
+    text-decoration:none;
+    transition:transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .whatsapp-float:hover{
+    transform:scale(1.08);
+    box-shadow:0 10px 30px rgba(0,0,0,0.32);
+  }
+  .whatsapp-float svg{width:28px; height:28px; color:#fff;}
+  .whatsapp-float .wa-label{
+    position:absolute;
+    right:70px;
+    background:var(--ink);
+    color:var(--cream);
+    padding:8px 14px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:600;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.25s ease;
+  }
+  .whatsapp-float:hover .wa-label{opacity:1;}
+  @media (max-width:768px){
+    .whatsapp-float{bottom:18px; right:18px; width:52px; height:52px;}
+    .whatsapp-float .wa-label{display:none;}
+  }
+
+  /* ===== WhatsApp link inside modals ===== */
+  .modal-whatsapp{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:transparent;
+    border:1px solid #25D366;
+    color:#128C4A;
+    font-weight:700;
+    font-size:13.5px;
+    padding:11px;
+    border-radius:8px;
+    text-decoration:none;
+    margin-top:10px;
+    transition:0.2s;
+  }
+  .modal-whatsapp:hover{background:#e9f9ef;}
+  .modal-or{
+    text-align:center;
+    font-size:11.5px;
+    color:var(--soil);
+    opacity:0.55;
+    margin:14px 0 4px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .nav-whatsapp{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:#128C4A !important;
+    font-weight:700 !important;
+  }
+  .nav-whatsapp svg{width:15px; height:15px;}
+</style>
+</head>
+<body>
+
+<!-- shared SVG symbols -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="ico-grain" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round">
+    <path d="M12 22V9"/>
+    <path d="M12 9c0-3 2-4 4-5-1 3-1 4-4 5Z"/>
+    <path d="M12 9c0-3-2-4-4-5 1 3 1 4 4 5Z"/>
+    <path d="M12 13c0-2.4 1.6-3.2 3.2-4-.8 2.4-.8 3.2-3.2 4Z"/>
+    <path d="M12 13c0-2.4-1.6-3.2-3.2-4 .8 2.4.8 3.2 3.2 4Z"/>
+    <circle cx="12" cy="6" r="1.4"/>
+  </symbol>
+  <symbol id="ico-chart" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 19V9M12 19V4M20 19v-6"/>
+  </symbol>
+  <symbol id="ico-shield" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/>
+  </symbol>
+  <symbol id="ico-store" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 9v10h16V9M2 9l2-5h16l2 5M2 9h20M9 19v-6h6v6"/>
+  </symbol>
+  <symbol id="ico-cycle" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 12a8 8 0 0 1 14-5M20 12a8 8 0 0 1-14 5M14 4l3 3-3 3M10 20l-3-3 3-3"/>
+  </symbol>
+  <symbol id="ico-cloud" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 18a4 4 0 0 1-1-7.9A5.5 5.5 0 0 1 17 9a4.5 4.5 0 0 1-1 9H7Z"/>
+    <path d="M8 21l-1 2M12 21l-1 2M16 21l-1 2"/>
+  </symbol>
+  <symbol id="ico-pin" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12Z"/>
+    <circle cx="12" cy="10" r="2.4"/>
+  </symbol>
+  <symbol id="ico-dash" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="8" height="8" rx="1"/>
+    <rect x="13" y="3" width="8" height="5" rx="1"/>
+    <rect x="13" y="12" width="8" height="9" rx="1"/>
+    <rect x="3" y="14" width="8" height="7" rx="1"/>
+  </symbol>
+  <symbol id="ico-chat" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12Z"/>
+  </symbol>
+  <symbol id="ico-truck" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="1" y="7" width="13" height="9" rx="1"/>
+    <path d="M14 10h4l3 3v3h-7z"/>
+    <circle cx="6" cy="18" r="1.6"/>
+    <circle cx="17" cy="18" r="1.6"/>
+  </symbol>
+  <symbol id="ico-hand" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 13V6a1.5 1.5 0 0 1 3 0v5M6 11V4a1.5 1.5 0 0 1 3 0v6M9 11V5a1.5 1.5 0 0 1 3 0v7M12 12V8a1.5 1.5 0 0 1 3 0v5.5"/>
+    <path d="M3 13c0 4 2.5 8 7 8h3c3 0 5-2 5-5v-3.5"/>
+  </symbol>
+  <symbol id="ico-doc" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 2h9l5 5v15H6z"/>
+    <path d="M15 2v5h5M9 12h6M9 16h6M9 8h2"/>
+  </symbol>
+  <symbol id="ico-users" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="9" cy="8" r="3"/>
+    <path d="M2 20c0-4 3-6 7-6s7 2 7 6M17 8a3 3 0 1 1 0-6M22 20c0-3-2-5-4-5.5"/>
+  </symbol>
+  <symbol id="ico-coin" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M9 9.5c0-1.5 1.3-2 3-2s3 .8 3 2-1.3 1.8-3 2-3 .8-3 2 1.3 2 3 2 3-.5 3-2"/>
+  </symbol>
+  <symbol id="ico-clock" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M12 7v5l3.5 2"/>
+  </symbol>
+  <symbol id="ico-linkedin" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <path d="M8 10v7M8 7v.01M12 17v-4.5a2 2 0 0 1 4 0V17M12 17v-7"/>
+  </symbol>
+  <symbol id="ico-x" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round">
+    <path d="M4 4l16 16M20 4L4 20"/>
+  </symbol>
+  <symbol id="ico-yt" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="6" width="20" height="12" rx="3"/>
+    <path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="ico-play" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M10 8.5l6 3.5-6 3.5Z" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="ico-whatsapp" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.28-1.38a9.9 9.9 0 0 0 4.71 1.2h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm0 18.13h-.01a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.13.82.84-3.05-.2-.31a8.2 8.2 0 0 1-1.26-4.36c0-4.55 3.7-8.25 8.25-8.25 4.55 0 8.25 3.7 8.25 8.25 0 4.55-3.7 8.22-8.26 8.22Zm4.52-6.16c-.25-.12-1.47-.72-1.7-.81-.23-.08-.4-.12-.56.12-.17.25-.65.81-.8.98-.14.17-.29.19-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.15-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.4.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.87.85-.87 2.08 0 1.23.89 2.42 1.02 2.59.12.17 1.75 2.67 4.24 3.75.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.2-.58.2-1.08.14-1.18-.06-.11-.23-.17-.48-.29Z"/>
+  </symbol>
+</svg>
+
+<!-- ===== HEADER ===== -->
+<header class="header">
+  <div class="logo">
+    <svg viewBox="0 0 40 40" fill="none">
+      <rect width="40" height="40" rx="6" fill="#1C1706"/>
+      <path d="M20 33V15" stroke="#E3B84C" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M20 15c0-5 3.2-6.6 6.6-8.2-1.6 5-1.6 6.6-6.6 8.2Z" fill="#E3B84C"/>
+      <path d="M20 15c0-5-3.2-6.6-6.6-8.2 1.6 5 1.6 6.6 6.6 8.2Z" fill="#C68B12"/>
+      <path d="M20 21c0-3.6 2.4-4.8 4.8-6-1.2 3.6-1.2 4.8-4.8 6Z" fill="#E3B84C"/>
+      <path d="M20 21c0-3.6-2.4-4.8-4.8-6 1.2 3.6 1.2 4.8 4.8 6Z" fill="#C68B12"/>
+    </svg>
+    <div class="logo-text">
+      <span class="name">Cereale<em>Tech</em></span>
+      <small>AI Circular · Sahel</small>
+    </div>
+  </div>
+  <nav class="nav">
+    <a href="#mockup">Plateforme</a>
+    <a href="#features">Fonctionnalités</a>
+    <a href="#stats">Impact</a>
+    <a href="https://wa.me/237680431902?text=Bonjour%20CerealeTech%2C%20je%20souhaite%20en%20savoir%20plus%20sur%20la%20plateforme." target="_blank" rel="noopener" class="nav-whatsapp"><svg><use href="#ico-whatsapp"/></svg> WhatsApp</a>
+    <button class="btn-demo" onclick="openModal('modal-contact')" type="button"><svg width="13" height="13"><use href="#ico-play"/></svg> Voir la démo</button>
+  </nav>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="grain-field" aria-hidden="true" id="grainField"></div>
+  <div class="hero-inner">
+    <span class="hero-eyebrow">Adamaoua · Lac Tchad · 2026</span>
+    <h1>L'IA qui fait pousser <em>le crédit</em> dans les champs du Sahel</h1>
+    <p>Score de crédit alternatif, marketplace directe et valorisation des déchets agricoles — une seule plateforme, accessible par smartphone, WhatsApp ou USSD.</p>
+    <div class="hero-badges">
+      <span class="badge"><span class="dot"></span> IA &amp; Credit Score</span>
+      <span class="badge"><span class="dot"></span> Marketplace</span>
+      <span class="badge"><span class="dot"></span> Économie circulaire</span>
+      <span class="badge"><span class="dot"></span> Alertes climatiques</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MOCKUP ===== -->
+<section class="mockup-section" id="mockup">
+  <div class="section-head">
+    <div class="section-eyebrow">La plateforme</div>
+    <h2>Trois écrans, un seul grenier de données</h2>
+    <p>Producteur, coopérative, institution financière — chacun voit ce dont il a besoin.</p>
+  </div>
+
+  <div class="phones-container">
+
+    <!-- Phone 1 : Producteur -->
+    <div class="phone-card">
+      <div class="screen">
+        <div class="status-bar"><span>RÉSEAU 4G</span><span>87%</span></div>
+        <div class="app-row"><svg><use href="#ico-grain"/></svg><span>CerealeTech</span></div>
+        <div class="persona-tag">Producteur</div>
+        <div class="credit-score">
+          <div class="label">SCORE DE CRÉDIT</div>
+          <div class="big">742</div>
+          <div class="status">Éligible à 250 000 FCFA</div>
+        </div>
+        <ul class="feature-list">
+          <li><svg class="ico" width="16" height="16"><use href="#ico-chart"/></svg> Maïs : 210 FCFA/kg</li>
+          <li><svg class="ico" width="16" height="16"><use href="#ico-cloud"/></svg> Pluies attendues demain</li>
+          <li><svg class="ico" width="16" height="16"><use href="#ico-grain"/></svg> Conseil : semis de niébé</li>
+          <li><svg class="ico" width="16" height="16"><use href="#ico-store"/></svg> 3 acheteurs près de vous</li>
+        </ul>
+        <button class="btn-screen" onclick="openModal('modal-credit')" type="button"><svg width="14" height="14"><use href="#ico-hand"/></svg> Demander un microcrédit</button>
+      </div>
+      <div class="phone-label">— Producteur —</div>
+    </div>
+
+    <!-- Phone 2 : Marketplace -->
+    <div class="phone-card">
+      <div class="screen">
+        <div class="status-bar"><span>RÉSEAU 4G</span><span>92%</span></div>
+        <div class="app-row"><svg><use href="#ico-grain"/></svg><span>CerealeTech</span></div>
+        <div class="persona-tag">Marketplace</div>
+        <ul class="feature-list" style="margin-top:4px;">
+          <li><svg class="ico" width="16" height="16"><use href="#ico-store"/></svg> Offre : 5t de maïs bio</li>
+          <li><svg class="ico" width="16" height="16"><use href="#ico-store"/></svg> Offre : 2t de niébé</li>
+          <li><svg class="ico" width="16" height="16"><use href="#ico-truck"/></svg> Livraison en 48h</li>
+          <li><svg class="ico" width="16" height="16"><use href="#ico-users"/></svg> 12 transactions ce mois</li>
+        </ul>
+        <div class="data-row"><span>Recherche</span><span class="v">Arachides 500kg</span></div>
+        <button class="btn-screen" onclick="openModal('modal-signup')" type="button"><svg width="14" height="14"><use href="#ico-store"/></svg> Passer une commande</button>
+      </div>
+      <div class="phone-label">— Coopérative / Acheteur —</div>
+    </div>
+
+    <!-- Phone 3 : Finance -->
+    <div class="phone-card">
+      <div class="screen">
+        <div class="status-bar"><span>RÉSEAU 4G</span><span>78%</span></div>
+        <div class="app-row"><svg><use href="#ico-grain"/></svg><span>CerealeTech</span></div>
+        <div class="persona-tag">AI Credit Score</div>
+        <div class="data-row"><span>Profil de risque</span><span class="v">Très faible</span></div>
+        <div class="data-row"><span>Taux de remboursement</span><span class="v">97%</span></div>
+        <ul class="feature-list">
+          <li><svg class="ico" width="16" height="16"><use href="#ico-users"/></svg> 1 242 producteurs notés</li>
+          <li><svg class="ico" width="16" height="16"><use href="#ico-coin"/></svg> 89M FCFA distribués</li>
+          <li><svg class="ico" width="16" height="16"><use href="#ico-clock"/></svg> 12 nouvelles demandes</li>
+        </ul>
+        <button class="btn-screen" onclick="openModal('modal-contact')" type="button"><svg width="14" height="14"><use href="#ico-doc"/></svg> Analyser un dossier</button>
+      </div>
+      <div class="phone-label">— Institution financière —</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section class="features" id="features">
+  <div class="section-head">
+    <div class="section-eyebrow">Fonctionnalités</div>
+    <h2>Un écosystème, huit rouages</h2>
+    <p>Tout ce dont un système agricole résilient a besoin, en une plateforme.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-item"><span class="idx">01</span><svg><use href="#ico-chart"/></svg><h3>IA &amp; Prédictions</h3><p>Prix des marchés, rendements, conseils personnalisés.</p></div>
+    <div class="feature-item"><span class="idx">02</span><svg><use href="#ico-shield"/></svg><h3>AI Credit Score</h3><p>Score alternatif pour un accès facilité au microcrédit.</p></div>
+    <div class="feature-item"><span class="idx">03</span><svg><use href="#ico-store"/></svg><h3>Marketplace</h3><p>Mise en relation directe producteurs-acheteurs.</p></div>
+    <div class="feature-item"><span class="idx">04</span><svg><use href="#ico-cycle"/></svg><h3>Économie circulaire</h3><p>Valorisation des déchets en compost, biogaz, alimentation.</p></div>
+    <div class="feature-item"><span class="idx">05</span><svg><use href="#ico-cloud"/></svg><h3>Alertes climatiques</h3><p>Prévisions, conseils et adaptation au changement.</p></div>
+    <div class="feature-item"><span class="idx">06</span><svg><use href="#ico-pin"/></svg><h3>Géolocalisation</h3><p>Traçabilité des produits et suivi des exploitations.</p></div>
+    <div class="feature-item"><span class="idx">07</span><svg><use href="#ico-dash"/></svg><h3>Dashboard Impact</h3><p>Suivi en temps réel des indicateurs clés.</p></div>
+    <div class="feature-item"><span class="idx">08</span><svg><use href="#ico-chat"/></svg><h3>WhatsApp &amp; USSD</h3><p>Accessible même sans smartphone ni internet.</p></div>
+  </div>
+</section>
+
+<!-- ===== CTA BAND ===== -->
+<section class="cta-band" id="cta">
+  <div class="section-eyebrow" style="text-align:center;">Rejoindre</div>
+  <h2>Prêt à faire pousser votre score de crédit ?</h2>
+  <p>Inscrivez-vous comme producteur, demandez un microcrédit, ou parlez à notre équipe pour une démo.</p>
+  <div class="cta-buttons">
+    <button class="btn-primary" onclick="openModal('modal-signup')" type="button"><svg width="15" height="15"><use href="#ico-grain"/></svg> S'inscrire comme producteur</button>
+    <button class="btn-secondary" onclick="openModal('modal-credit')" type="button"><svg width="15" height="15"><use href="#ico-hand"/></svg> Demander un microcrédit</button>
+    <button class="btn-secondary" onclick="openModal('modal-contact')" type="button"><svg width="15" height="15"><use href="#ico-chat"/></svg> Contacter l'équipe</button>
+  </div>
+</section>
+
+<!-- ===== STATS ===== -->
+<section class="stats-wrap" id="stats">
+  <div class="section-head">
+    <div class="section-eyebrow">Impact</div>
+    <h2>Le grenier, en chiffres</h2>
+  </div>
+  <div class="stats">
+    <div class="stat"><h4>10 000</h4><p>Producteurs accompagnés</p></div>
+    <div class="stat"><h4>5 000</h4><p>Femmes bénéficiaires</p></div>
+    <div class="stat"><h4>500M</h4><p>FCFA de microcrédits facilités</p></div>
+    <div class="stat"><h4>30%</h4><p>Réduction des pertes post-récolte</p></div>
+    <div class="stat"><h4>300</h4><p>Emplois verts créés</p></div>
+    <div class="stat"><h4>10</h4><p>Pays du Sahel couverts</p></div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="logo">
+    <svg viewBox="0 0 40 40" width="30" height="30" fill="none">
+      <rect width="40" height="40" rx="6" fill="#1C1706"/>
+      <path d="M20 33V15" stroke="#E3B84C" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M20 15c0-5 3.2-6.6 6.6-8.2-1.6 5-1.6 6.6-6.6 8.2Z" fill="#E3B84C"/>
+      <path d="M20 15c0-5-3.2-6.6-6.6-8.2 1.6 5 1.6 6.6 6.6 8.2Z" fill="#C68B12"/>
+    </svg>
+    <div class="logo-text"><span class="name">Cereale<em>Tech</em></span></div>
+  </div>
+  <div class="social">
+    <a href="#" aria-label="LinkedIn"><svg width="16" height="16"><use href="#ico-linkedin"/></svg></a>
+    <a href="#" aria-label="Twitter / X"><svg width="16" height="16"><use href="#ico-x"/></svg></a>
+    <a href="#" aria-label="YouTube"><svg width="16" height="16"><use href="#ico-yt"/></svg></a>
+  </div>
+  <small>&copy; 2026 CEREALETECH — AI CIRCULAR · SAHEL</small>
+</footer>
+
+<!-- ===== WHATSAPP FLOATING BUTTON ===== -->
+<a class="whatsapp-float" href="https://wa.me/237680431902?text=Bonjour%20CerealeTech%2C%20j%27ai%20une%20question." target="_blank" rel="noopener" aria-label="Discuter sur WhatsApp">
+  <span class="wa-label">Discuter sur WhatsApp</span>
+  <svg><use href="#ico-whatsapp"/></svg>
+</a>
+
+<!-- ===== MODAL: Inscription producteur ===== -->
+<div class="modal-overlay" id="modal-signup" onclick="if(event.target===this) closeModal('modal-signup')">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="signup-title">
+    <button class="modal-close" onclick="closeModal('modal-signup')" aria-label="Fermer" type="button"><svg width="14" height="14"><use href="#ico-x"/></svg></button>
+    <div class="modal-eyebrow">Producteur / Coopérative</div>
+    <h3 id="signup-title">Rejoindre CerealeTech</h3>
+    <p class="modal-sub">Créez votre profil pour accéder au marketplace, au score de crédit et aux alertes climatiques.</p>
+    <div class="form-status" id="status-signup"></div>
+    <form onsubmit="return submitForm(event,'signup')">
+      <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY">
+      <input type="hidden" name="subject" value="Nouvelle inscription — CerealeTech">
+      <input type="hidden" name="from_name" value="CerealeTech — Formulaire inscription">
+      <div class="form-field">
+        <label for="s-name">Nom complet</label>
+        <input id="s-name" name="Nom complet" type="text" required autocomplete="name">
+      </div>
+      <div class="form-field">
+        <label for="s-phone">Téléphone (WhatsApp de préférence)</label>
+        <input id="s-phone" name="Téléphone" type="tel" required placeholder="+237 6 xx xx xx xx" autocomplete="tel">
+      </div>
+      <div class="form-field">
+        <label for="s-region">Région</label>
+        <select id="s-region" name="Région" required>
+          <option value="">Sélectionner...</option>
+          <option>Adamaoua</option>
+          <option>Extrême-Nord</option>
+          <option>Nord</option>
+          <option>Lac Tchad (Tchad)</option>
+          <option>Diffa (Niger)</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="s-crop">Culture principale</label>
+        <input id="s-crop" name="Culture principale" type="text" placeholder="Maïs, niébé, arachide..." required>
+      </div>
+      <button class="form-submit" type="submit" id="btn-signup">
+        <svg width="15" height="15"><use href="#ico-grain"/></svg> Créer mon profil
+      </button>
+      <p class="form-note">Vos données servent uniquement à créer votre profil CerealeTech.</p>
+    </form>
+    <div class="modal-or">ou</div>
+    <a class="modal-whatsapp" href="https://wa.me/237680431902?text=Bonjour%2C%20je%20souhaite%20m%27inscrire%20comme%20producteur%20sur%20CerealeTech." target="_blank" rel="noopener">
+      <svg width="16" height="16"><use href="#ico-whatsapp"/></svg> S'inscrire via WhatsApp
+    </a>
+  </div>
+</div>
+
+<!-- ===== MODAL: Demande de microcrédit ===== -->
+<div class="modal-overlay" id="modal-credit" onclick="if(event.target===this) closeModal('modal-credit')">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="credit-title">
+    <button class="modal-close" onclick="closeModal('modal-credit')" aria-label="Fermer" type="button"><svg width="14" height="14"><use href="#ico-x"/></svg></button>
+    <div class="modal-eyebrow">Microcrédit</div>
+    <h3 id="credit-title">Demander un microcrédit</h3>
+    <p class="modal-sub">Notre équipe étudie votre demande et vous recontacte sous 48h ouvrées.</p>
+    <div class="form-status" id="status-credit"></div>
+    <form onsubmit="return submitForm(event,'credit')">
+      <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY">
+      <input type="hidden" name="subject" value="Nouvelle demande de microcrédit — CerealeTech">
+      <input type="hidden" name="from_name" value="CerealeTech — Formulaire crédit">
+      <div class="form-field">
+        <label for="c-name">Nom complet</label>
+        <input id="c-name" name="Nom complet" type="text" required autocomplete="name">
+      </div>
+      <div class="form-field">
+        <label for="c-phone">Téléphone</label>
+        <input id="c-phone" name="Téléphone" type="tel" required placeholder="+237 6 xx xx xx xx" autocomplete="tel">
+      </div>
+      <div class="form-field">
+        <label for="c-amount">Montant souhaité (FCFA)</label>
+        <input id="c-amount" name="Montant souhaité (FCFA)" type="number" min="10000" step="1000" required placeholder="Ex : 150000">
+      </div>
+      <div class="form-field">
+        <label for="c-reason">Motif du crédit</label>
+        <textarea id="c-reason" name="Motif du crédit" required placeholder="Achat de semences, intrants, matériel..."></textarea>
+      </div>
+      <button class="form-submit" type="submit" id="btn-credit">
+        <svg width="15" height="15"><use href="#ico-hand"/></svg> Envoyer ma demande
+      </button>
+      <p class="form-note">Sans engagement — une évaluation de votre score de crédit suivra.</p>
+    </form>
+    <div class="modal-or">ou</div>
+    <a class="modal-whatsapp" href="https://wa.me/237680431902?text=Bonjour%2C%20je%20souhaite%20faire%20une%20demande%20de%20microcr%C3%A9dit%20sur%20CerealeTech." target="_blank" rel="noopener">
+      <svg width="16" height="16"><use href="#ico-whatsapp"/></svg> Demander via WhatsApp
+    </a>
+  </div>
+</div>
+
+<!-- ===== MODAL: Contact / Démo ===== -->
+<div class="modal-overlay" id="modal-contact" onclick="if(event.target===this) closeModal('modal-contact')">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+    <button class="modal-close" onclick="closeModal('modal-contact')" aria-label="Fermer" type="button"><svg width="14" height="14"><use href="#ico-x"/></svg></button>
+    <div class="modal-eyebrow">Institutions &amp; partenaires</div>
+    <h3 id="contact-title">Parler à l'équipe</h3>
+    <p class="modal-sub">Institution financière, coopérative, bailleur — dites-nous ce qui vous intéresse.</p>
+    <div class="form-status" id="status-contact"></div>
+    <form onsubmit="return submitForm(event,'contact')">
+      <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY">
+      <input type="hidden" name="subject" value="Nouvelle demande de contact / démo — CerealeTech">
+      <input type="hidden" name="from_name" value="CerealeTech — Formulaire contact">
+      <div class="form-field">
+        <label for="ct-name">Nom complet</label>
+        <input id="ct-name" name="Nom complet" type="text" required autocomplete="name">
+      </div>
+      <div class="form-field">
+        <label for="ct-org">Organisation</label>
+        <input id="ct-org" name="Organisation" type="text" placeholder="Banque, ONG, coopérative...">
+      </div>
+      <div class="form-field">
+        <label for="ct-email">Email</label>
+        <input id="ct-email" name="Email" type="email" required autocomplete="email">
+      </div>
+      <div class="form-field">
+        <label for="ct-msg">Message</label>
+        <textarea id="ct-msg" name="Message" required placeholder="Votre besoin, votre question..."></textarea>
+      </div>
+      <button class="form-submit" type="submit" id="btn-contact">
+        <svg width="15" height="15"><use href="#ico-chat"/></svg> Envoyer le message
+      </button>
+      <p class="form-note">Réponse sous 2 jours ouvrés.</p>
+    </form>
+    <div class="modal-or">ou</div>
+    <a class="modal-whatsapp" href="https://wa.me/237680431902?text=Bonjour%2C%20je%20souhaite%20discuter%20d%27un%20partenariat%20%2F%20d%27une%20d%C3%A9mo%20CerealeTech." target="_blank" rel="noopener">
+      <svg width="16" height="16"><use href="#ico-whatsapp"/></svg> Écrire sur WhatsApp
+    </a>
+  </div>
+</div>
+
+<script>
+  // Build the grain field background procedurally (signature motif, not decoration-for-its-own-sake:
+  // density implies "field rows" and references the USSD/offline grid the product runs on)
+  (function(){
+    var field = document.getElementById('grainField');
+    if(!field) return;
+    var count = 140;
+    var svgNS = 'http://www.w3.org/2000/svg';
+    for(var i=0;i<count;i++){
+      var svg = document.createElementNS(svgNS,'svg');
+      svg.setAttribute('viewBox','0 0 24 24');
+      svg.setAttribute('fill','none');
+      svg.setAttribute('stroke','currentColor');
+      svg.setAttribute('stroke-width','1.6');
+      svg.style.opacity = (0.4 + Math.random()*0.6).toFixed(2);
+      var use = document.createElementNS(svgNS,'use');
+      use.setAttribute('href','#ico-grain');
+      svg.appendChild(use);
+      field.appendChild(svg);
+    }
+  })();
+
+  // ===== Modal open/close =====
+  function openModal(id){
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id){
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      document.querySelectorAll('.modal-overlay.open').forEach(function(m){
+        closeModal(m.id);
+      });
+    }
+  });
+
+  // ===== Real form submission via Web3Forms =====
+  function submitForm(event, kind){
+    event.preventDefault();
+    var form = event.target;
+    var btn = document.getElementById('btn-' + kind);
+    var status = document.getElementById('status-' + kind);
+    var data = new FormData(form);
+
+    if(data.get('access_key') === 'YOUR_WEB3FORMS_ACCESS_KEY'){
+      status.textContent = "Configuration requise : ajoutez votre clé Web3Forms dans le code avant mise en ligne (voir instructions fournies).";
+      status.className = 'form-status show error';
+      return false;
+    }
+
+    var originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours...';
+    status.className = 'form-status';
+
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: data
+    })
+    .then(function(res){ return res.json(); })
+    .then(function(result){
+      if(result.success){
+        status.textContent = "Merci ! Votre demande a bien été envoyée. Nous vous recontactons bientôt.";
+        status.className = 'form-status show success';
+        form.reset();
+      } else {
+        status.textContent = "Une erreur est survenue. Merci de réessayer, ou de nous contacter directement.";
+        status.className = 'form-status show error';
+      }
+    })
+    .catch(function(){
+      status.textContent = "Connexion impossible. Vérifiez votre connexion internet et réessayez.";
+      status.className = 'form-status show error';
+    })
+    .finally(function(){
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    });
+
+    return false;
+  }
+</script>
+
+</body>
+</html>
